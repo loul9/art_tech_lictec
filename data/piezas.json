@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "autor": "Proyecto Circuitos básicos AR/VR",
+    "marco": "Ley 115/1994 · Orientaciones Curriculares MEN 2022 – Tecnología e Informática",
+    "componentesMEN": [
+      "Naturaleza y evolución de la tecnología",
+      "Apropiación y uso de la tecnología",
+      "Solución de problemas con tecnología",
+      "Tecnología y sociedad"
+    ],
+    "instruccionesDocente": "Edite SOLO los campos de texto. No borre comas, llaves ni corchetes. Las rutas .glb son relativas a la raíz del sitio. Si no tiene el modelo de una pieza, deje la cadena vacía \"\" y el visor lo omitirá sin error."
+  },
+  "artefactos": {
+    "linterna": {
+      "nombre": "Linterna",
+      "componenteMEN": "Apropiación y uso de la tecnología",
+      "ficha": {
+        "funcion": "Transforma energía eléctrica en energía luminosa mediante el efecto Joule en el filamento del bombillo (o en un LED).",
+        "principio": "Circuito eléctrico cerrado: batería → interruptor → bombillo → retorno.",
+        "impactoSocial": "Permite iluminar espacios sin red eléctrica; clave en zonas rurales y emergencias.",
+        "preguntaIndagacion": "¿Qué ocurre si se abre el circuito en el interruptor?"
+      },
+      "piezas": {
+        "carcasa":    { "nombre": "Carcasa",    "funcion": "Protege los componentes y da forma ergonómica.",         "glb": "models/linterna/carcasa.glb" },
+        "bombillo":   { "nombre": "Bombillo",   "funcion": "Convierte energía eléctrica en luz (efecto Joule o LED).", "glb": "models/linterna/bombillo.glb" },
+        "bateria":    { "nombre": "Batería",    "funcion": "Almacena y entrega energía eléctrica al circuito.",      "glb": "models/linterna/bateria.glb" },
+        "interruptor":{ "nombre": "Interruptor","funcion": "Abre o cierra el circuito eléctrico.",                    "glb": "models/linterna/interruptor.glb" }
+      },
+      "retos": [
+        { "q": "¿Qué componente abre o cierra el circuito?", "opciones": ["Carcasa","Interruptor","Bombillo"], "ok": 1,
+          "fb": "El interruptor controla el paso de la corriente (componente 'Solución de problemas')." },
+        { "q": "¿Qué transformación de energía ocurre en el bombillo?", "opciones": ["Eléctrica → sonora","Eléctrica → luminosa","Química → mecánica"], "ok": 1,
+          "fb": "En el bombillo la energía eléctrica se transforma en luz (y algo de calor)." },
+        { "q": "Si la batería está descargada, ¿qué se observa?", "opciones": ["El bombillo no enciende","El interruptor gira","La carcasa se rompe"], "ok": 0,
+          "fb": "Sin fuente de energía el circuito no funciona." }
+      ],
+      "glosario": {
+        "Circuito eléctrico": "Camino cerrado por donde circula la corriente eléctrica.",
+        "Efecto Joule": "Fenómeno por el cual la corriente eléctrica produce calor y luz.",
+        "Interruptor": "Dispositivo que abre o cierra un circuito."
+      }
+    },
+    "timbre": {
+      "nombre": "Timbre",
+      "componenteMEN": "Naturaleza y evolución de la tecnología",
+      "ficha": {
+        "funcion": "Transforma energía eléctrica en energía sonora mediante un electroimán y un martillo.",
+        "principio": "Electromagnetismo: la corriente genera un campo magnético que atrae el martillo hacia la campana.",
+        "impactoSocial": "Permitió la comunicación a distancia en viviendas y edificios.",
+        "preguntaIndagacion": "¿Qué pasa si se desconecta el electroimán?"
+      },
+      "piezas": {
+        "campana":    { "nombre": "Campana",    "funcion": "Produce el sonido al ser golpeada.",             "glb": "models/timbre/campana.glb" },
+        "electroiman":{ "nombre": "Electroimán","funcion": "Genera campo magnético al circular corriente.",   "glb": "models/timbre/electroiman.glb" },
+        "martillo":   { "nombre": "Martillo",   "funcion": "Golpea la campana al ser atraído.",             "glb": "models/timbre/martillo.glb" },
+        "pulsador":   { "nombre": "Pulsador",   "funcion": "Activa el circuito al presionarlo.",            "glb": "models/timbre/pulsador.glb" }
+      },
+      "retos": [
+        { "q": "¿Qué fenómeno físico permite que suene el timbre?", "opciones": ["Termodinámica","Electromagnetismo","Óptica"], "ok": 1,
+          "fb": "El electroimán usa electromagnetismo (componente 'Naturaleza y evolución')." },
+        { "q": "¿Qué pieza golpea la campana?", "opciones": ["Pulsador","Martillo","Carcasa"], "ok": 1,
+          "fb": "El martillo es atraído por el electroimán y golpea la campana." },
+        { "q": "El timbre transforma energía eléctrica en…", "opciones": ["Luminosa","Sonora","Química"], "ok": 1,
+          "fb": "La salida del sistema es sonido." }
+      ],
+      "glosario": {
+        "Electroimán": "Bobina que genera un campo magnético al pasar corriente.",
+        "Pulsador": "Interruptor momentáneo que solo cierra el circuito mientras se presiona.",
+        "Transducción": "Cambio de un tipo de energía a otro."
+      }
+    },
+    "ventilador": {
+      "nombre": "Ventilador",
+      "componenteMEN": "Tecnología y sociedad",
+      "ficha": {
+        "funcion": "Transforma energía eléctrica en energía mecánica (movimiento) que mueve el aire.",
+        "principio": "Motor eléctrico: la corriente en una bobina dentro de un campo magnético produce rotación.",
+        "impactoSocial": "Mejora el confort térmico y la ventilación en viviendas y aulas.",
+        "preguntaIndagacion": "¿Qué pasa si se invierte la polaridad del motor?"
+      },
+      "piezas": {
+        "aspas":   { "nombre": "Aspas",   "funcion": "Empujan el aire al girar.",                   "glb": "models/ventilador/aspas.glb" },
+        "motor":   { "nombre": "Motor",   "funcion": "Convierte energía eléctrica en movimiento.",   "glb": "models/ventilador/motor.glb" },
+        "base":    { "nombre": "Base",    "funcion": "Sostiene y estabiliza el artefacto.",         "glb": "models/ventilador/base.glb" },
+        "rejilla": { "nombre": "Rejilla", "funcion": "Protege al usuario de las aspas.",            "glb": "models/ventilador/rejilla.glb" }
+      },
+      "retos": [
+        { "q": "¿Qué tipo de energía entrega el ventilador al aire?", "opciones": ["Química","Mecánica (movimiento)","Nuclear"], "ok": 1,
+          "fb": "El motor transforma electricidad en movimiento (componente 'Tecnología y sociedad')." },
+        { "q": "¿Qué pieza protege al usuario?", "opciones": ["Rejilla","Motor","Base"], "ok": 0,
+          "fb": "La rejilla es una medida de seguridad del artefacto." },
+        { "q": "El ventilador mejora principalmente…", "opciones": ["La iluminación","El confort térmico","La comunicación"], "ok": 1,
+          "fb": "Su impacto social está en el confort y la ventilación." }
+      ],
+      "glosario": {
+        "Motor eléctrico": "Dispositivo que convierte energía eléctrica en movimiento.",
+        "Rejilla": "Elemento de seguridad que impide el contacto con partes móviles.",
+        "Confort térmico": "Sensación de bienestar frente a la temperatura del ambiente."
+      }
+    }
+  }
+}

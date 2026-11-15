@@ -1,0 +1,111 @@
+/* ============================================================
+   mejoras.css
+   Proyecto: Circuitos básicos AR/VR
+   Rol: Desarrollador Web Senior + Edumática
+   Marco normativo: Ley 115/1994 (Art. 5, 22, 23) y
+   Orientaciones Curriculares MEN 2022 – Tecnología e Informática
+   Componentes MEN cubiertos:
+     - Naturaleza y evolución de la tecnología
+     - Apropiación y uso de la tecnología
+     - Solución de problemas con tecnología
+     - Tecnología y sociedad
+   ============================================================ */
+
+/* ---------- Panel pedagógico inferior con pestañas ---------- */
+#edu-panel{
+  position:fixed; left:8px; right:8px; bottom:8px; z-index:8;
+  background:rgba(15,23,42,.95); border:1px solid #1e3a8a;
+  border-radius:14px; max-width:640px; overflow:hidden;
+  font-family:system-ui,sans-serif; color:#fff;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);
+}
+#edu-panel header{
+  display:flex; gap:4px; padding:6px 8px; background:#0b1229;
+  border-bottom:1px solid #1e3a8a; flex-wrap:wrap;
+}
+#edu-panel header button{
+  background:transparent; border:1px solid transparent; color:#cbd5e1;
+  padding:6px 10px; border-radius:8px; font-size:13px; cursor:pointer;
+}
+#edu-panel header button.act{
+  background:#1d4ed8; color:#fff; border-color:#3b82f6;
+}
+#edu-panel .tab{display:none; padding:10px 14px; max-height:42vh; overflow:auto}
+#edu-panel .tab.act{display:block}
+#edu-panel h3{margin:0 0 6px; font-size:15px; color:#93c5fd}
+#edu-panel p{margin:4px 0; font-size:13px; line-height:1.45}
+#edu-panel .badge{
+  display:inline-block; background:#0e7490; color:#fff;
+  font-size:11px; padding:2px 7px; border-radius:999px; margin-left:6px;
+}
+#edu-panel .pregunta{
+  border:1px solid #1e3a8a; border-radius:10px; padding:8px 10px; margin:8px 0;
+}
+#edu-panel .pregunta button{
+  display:block; width:100%; text-align:left; margin:4px 0;
+  background:#1e293b; color:#e2e8f0; border:1px solid #334155;
+  border-radius:8px; padding:7px 9px; font-size:13px; cursor:pointer;
+}
+#edu-panel .pregunta button.ok{background:#065f46; border-color:#10b981}
+#edu-panel .pregunta button.no{background:#7f1d1d; border-color:#ef4444}
+#edu-panel .feedback{font-size:12px; color:#a5f3fc; margin-top:4px}
+#edu-panel .glosario dt{font-weight:600; color:#fbbf24; margin-top:6px}
+#edu-panel .glosario dd{margin:0 0 4px 0; font-size:12.5px; color:#cbd5e1}
+
+/* ---------- Botones de accesibilidad flotantes ---------- */
+#a11y{
+  position:fixed; right:10px; top:120px; z-index:9;
+  display:flex; flex-direction:column; gap:6px;
+}
+#a11y button{
+  background:rgba(15,23,42,.85); color:#fff; border:1px solid #334155;
+  border-radius:10px; padding:8px 10px; font-size:12px; cursor:pointer;
+  min-width:110px; text-align:left;
+}
+#a11y button.on{background:#0e9f6e; border-color:#10b981}
+
+/* ---------- Alto contraste ---------- */
+body.contraste{
+  background:#000 !important; color:#fff !important;
+}
+body.contraste #edu-panel,
+body.contraste .label,
+body.contraste #ctl,
+body.contraste #info{
+  background:#000 !important; border-color:#fff !important;
+}
+body.contraste button{background:#000 !important; color:#fff !important; border:2px solid #fff !important}
+
+/* ---------- Texto grande ---------- */
+body.texto-grande{font-size:118%}
+body.texto-grande #edu-panel p,
+body.texto-grande #edu-panel button{font-size:15px}
+body.texto-grande .label{font-size:15px}
+
+/* ---------- Onboarding animado ---------- */
+#onboarding{
+  position:fixed; inset:0; z-index:30; background:rgba(2,6,23,.92);
+  display:none; align-items:center; justify-content:center; flex-direction:column;
+  text-align:center; padding:20px; color:#fff;
+}
+#onboarding.show{display:flex}
+#onboarding .paso{max-width:460px}
+#onboarding .icono{font-size:64px; animation:pulso 1.4s infinite}
+@keyframes pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+#onboarding button{margin-top:18px}
+
+/* ---------- Toast de notificaciones ---------- */
+#toast{
+  position:fixed; left:50%; bottom:calc(42vh + 20px); transform:translateX(-50%);
+  background:#0e7490; color:#fff; padding:10px 16px; border-radius:10px;
+  font-size:13px; z-index:40; opacity:0; transition:opacity .3s; pointer-events:none;
+  max-width:80vw; text-align:center;
+}
+#toast.show{opacity:1}
+
+/* ---------- Ajustes para móvil ---------- */
+@media (max-width:520px){
+  #edu-panel .tab{max-height:38vh}
+  #a11y{top:auto; bottom:calc(42vh + 12px); right:8px}
+  #a11y button{min-width:auto; padding:6px 8px; font-size:11px}
+}
