@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Circuitos básicos AR/VR</title>
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 40%,#18233f,#070a14);font-family:system-ui,sans-serif;color:#fff;touch-action:none}
+  #video{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none}
+  #c{position:fixed;inset:0;width:100%;height:100%;display:block}
+  #labels{position:fixed;inset:0;pointer-events:none;z-index:4}
+  .label{position:absolute;transform:translate(-50%,-100%);background:rgba(15,23,42,.9);border:1px solid #38bdf8;color:#fff;font-size:13px;padding:4px 9px;border-radius:8px;white-space:nowrap;pointer-events:auto;cursor:pointer;display:none}
+  .label.sel{background:#0891b2;border-color:#fff}
+  #ui{position:fixed;top:8px;left:8px;right:8px;display:flex;gap:6px;flex-wrap:wrap;z-index:6}
+  button,.btn{background:#1d4ed8;color:#fff;border:0;border-radius:10px;padding:9px 12px;font-size:14px;cursor:pointer}
+  button.off{background:#334155} button.act{background:#0e9f6e}
+  #info{position:fixed;left:8px;right:8px;bottom:8px;background:rgba(15,23,42,.92);border-radius:14px;padding:12px 14px;z-index:6;max-width:560px}
+  #info h2{margin:0 0 4px;font-size:18px} #info p{margin:3px 0;font-size:14px;line-height:1.35}
+  #ctl{position:fixed;right:10px;top:70px;z-index:6;background:rgba(15,23,42,.75);padding:8px 10px;border-radius:10px;font-size:12px}
+  #ctl input{width:120px}
+  #cursor{position:fixed;width:22px;height:22px;margin:-11px 0 0 -11px;border:3px solid #22d3ee;border-radius:50%;pointer-events:none;display:none;z-index:7}
+  #cursor.pinch{background:#22d3ee}
+  #status{position:fixed;top:56px;left:10px;font-size:12px;opacity:.85;z-index:6;max-width:60%}
+  #start{position:fixed;inset:0;background:#0b1020;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+  #start p{max-width:460px;opacity:.85;line-height:1.4}
+  body.vr #ui,body.vr #info,body.vr #status,body.vr #ctl,body.vr #labels{display:none}
+  #exitvr{display:none;position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:9;opacity:.6}
+  body.vr #exitvr{display:block}
+</style>
+</head>
+<body>
+<video id="video" playsinline muted></video>
+<canvas id="c"></canvas>
+<div id="labels"></div>
+<div id="cursor"></div>
+<div id="status"></div>
+
+<div id="ui">
+  <button id="bArt1" class="act">🔦 Linterna</button>
+  <button id="bArt2">🔔 Timbre</button>
+  <button id="bArt3">🌀 Ventilador</button>
+  
+  <button id="bCirc">⚡ Cerrar circuito</button>
+  <button id="bTr">👁 Carcasa transparente</button>
+  <button id="bAR">📷 AR + manos: OFF</button>
+  <button id="bVR">🥽 VR</button>
+  <label class="btn" style="background:#7c3aed">📦 Mi modelo .glb<input type="file" id="glb" accept=".glb,.gltf" hidden></label>
+</div>
+
+<div id="ctl">Separar partes<br><input type="range" id="exp" min="0" max="1" step="0.01" value="0"></div>
+<button id="exitvr">Salir de VR</button>
+<div id="info"></div>
+
+<div id="start">
+  <h1>🔌 Circuitos básicos de artefactos</h1>
+  <p>Linterna, timbre y ventilador en 3D con realidad aumentada y VR.<br>
+  <b>✋ Mano abierta</b> = separa las partes · <b>✊ Puño</b> = las junta · mueve la mano para desplazar el objeto · <b>👌 pellizco</b> sobre una parte para ver su función.</p>
+  <button id="go" style="font-size:18px;padding:14px 26px;margin-top:14px">Comenzar</button>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { VRButton } from 'three/addons/webxr/VRButton.js';
+
+// =====================================================================
+// 1. CONFIGURACIÓN DE PIEZAS
+// =====================================================================
+const CONFIG_PIEZAS = {
+  linterna: {
+    nombre: "Linterna de mano",
+    descripcion: "Circuito: pila (+) → interruptor → LED → pila (-)",
+    piezas: [
+      { id: 'bateria',    ruta: 'modelos/linterna/bateria.glb',    exp: [0, -0.6, 0], funcion: "Almacena energía química." },
+      { id: 'bombillo',   ruta: 'modelos/linterna/bombillo.glb',   exp: [0, 0.6, 0],  funcion: "Convierte energía en luz." },
+      { id: 'interruptor',ruta: 'modelos/linterna/interruptor.glb',exp: [0, 0, 0.6],  funcion: "Abre o cierra el circuito." },
+      { id: 'carcasa',    ruta: 'modelos/linterna/carcasa.glb',    exp: [0, 0.2, 0],  funcion: "Protege los componentes." },
+      { id: 'lente',      ruta: 'modelos/linterna/lente.glb',      exp: [0, 0, 0.9],  funcion: "Concentra la luz." }
+    ]
+  }
+};
+
+// =====================================================================
+// 2. ESCENA Y CONTROLES
+// =====================================================================
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.xr.enabled = true;
+document.body.appendChild(VRButton.createButton(renderer));
+
+const scene = new THREE.Scene();
+const grid = new THREE.GridHelper(4, 20, 0x1e3a5f, 0x0f1e33);
+grid.position.y = -1.5;
+scene.add(grid);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 100);
+camera.position.set(0, 0.5, 3);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 1;
+controls.maxDistance = 8;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 1.5));
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+dirLight.position.set(2, 3, 2);
+scene.add(dirLight);
+
+// =====================================================================
+// 3. LÓGICA DE CARGA Y AUTO-CENTRADO
+// =====================================================================
+const gltfLoader = new GLTFLoader();
+let grupoActual = new THREE.Group();
+scene.add(grupoActual);
+let piezasCargadas = [];
+
+const sliderExp = document.getElementById('exp');
+const infoDiv = document.getElementById('info');
+
+async function cargarArtefacto(nombreArtefacto) {
+  while(grupoActual.children.length > 0){ 
+    grupoActual.remove(grupoActual.children[0]); 
+  }
+  piezasCargadas = [];
+
+  const config = CONFIG_PIEZAS[nombreArtefacto];
+  if (!config) return;
+
+  document.getElementById('status').textContent = `Cargando ${config.nombre}...`;
+
+  const grupoTemporal = new THREE.Group();
+  
+  for (const def of config.piezas) {
+    try {
+      const gltf = await new Promise((resolve, reject) => gltfLoader.load(def.ruta, resolve, undefined, reject));
+      const mesh = gltf.scene;
+      mesh.userData = { 
+        id: def.id, 
+        funcion: def.funcion,
+        posExp: new THREE.Vector3(...def.exp)
+      };
+      grupoTemporal.add(mesh);
+    } catch (e) {
+      console.warn(`No se encontró ${def.ruta}`);
+    }
+  }
+
+  // Auto-centrado
+  const box = new THREE.Box3().setFromObject(grupoTemporal);
+  const center = box.getCenter(new THREE.Vector3());
+  
+  grupoTemporal.children.forEach(mesh => {
+    mesh.position.sub(center);
+    mesh.userData.posBase = mesh.position.clone();
+    grupoActual.add(mesh);
+    piezasCargadas.push(mesh);
+  });
+
+  // Ajustar cámara
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  camera.position.set(0, maxDim * 0.5, maxDim * 2.5);
+  controls.target.set(0, 0, 0);
+  controls.update();
+
+  sliderExp.value = 0;
+  actualizarExplosion(0);
+  
+  document.getElementById('status').textContent = `✅ Listo. ${config.nombre} cargada.`;
+  infoDiv.innerHTML = `
+    <h2>${config.nombre}</h2>
+    <p>${config.descripcion}</p>
+    <p><i>Arrastra con el ratón/dedo para rotar. Usa el slider para separar.</i></p>
+  `;
+}
+
+function actualizarExplosion(t) {
+  piezasCargadas.forEach(pieza => {
+    pieza.position.lerpVectors(pieza.userData.posBase, pieza.userData.posExp, t);
+  });
+}
+
+sliderExp.addEventListener('input', (e) => {
+  actualizarExplosion(parseFloat(e.target.value));
+});
+
+// =====================================================================
+// 5. INTERACCIÓN (Click para ver info)
+// =====================================================================
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+canvas.addEventListener('pointerdown', (e) => {
+  if (e.button !== 0) return; 
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(grupoActual.children, true);
+
+  if (intersects.length > 0) {
+    let obj = intersects[0].object;
+    while(obj.parent && !obj.userData.id) obj = obj.parent;
+    
+    if (obj.userData.id) {
+      infoDiv.innerHTML = `
+        <h2 style="color: #38bdf8">${obj.userData.id.toUpperCase()}</h2>
+        <p><b>Función:</b> ${obj.userData.funcion}</p>
+      `;
+    }
+  }
+});
+
+// =====================================================================
+// 6. BUCLE DE RENDER
+// =====================================================================
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+renderer.setAnimationLoop(() => {
+  controls.update();
+  renderer.render(scene, camera);
+});
+
+// Botones
+document.getElementById('go').addEventListener('click', () => {
+  document.getElementById('start').style.display = 'none';
+  cargarArtefacto('linterna');
+});
+
+document.getElementById('bArt1').addEventListener('click', () => cargarArtefacto('linterna'));
+</script>
+</body>
+</html>
